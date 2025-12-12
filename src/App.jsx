@@ -14,7 +14,7 @@ export default function ChessTournamentBoard() {
   const [rounds, setRounds] = useState([]); // array of rounds, each round is array of pairings
   const [numberOfRounds, setNumberOfRounds] = useState(0);
   const [loading, setLoading] = useState(true);
-  const [selectedRound, setSelectedRound] = useState(() => Number(localStorage.getItem("roundIndex")) || 0);
+  const [selectedRound, setSelectedRound] = useState(() => Number(localStorage.getItem("roundIndex")) || 1);
 
   const currentLeague = LEAGUES[leagueIndex];
 
@@ -80,7 +80,7 @@ export default function ChessTournamentBoard() {
             <button
               key={league.id}
               onClick={() => setLeagueIndex(idx)}
-              className={`px-2 sm:px-4 py-1 sm:py-2 rounded-lg font-semibold text-xs sm:text-base whitespace-nowrap ${
+              className={`px-2 sm:px-4 py-1 sm:py-2 rounded-lg font-semibold text-lg sm:text-base whitespace-nowrap ${
                 leagueIndex === idx
                   ? "bg-blue-600 text-white shadow-lg"
                   : "bg-slate-700 text-slate-300 hover:bg-slate-600"
@@ -97,7 +97,7 @@ export default function ChessTournamentBoard() {
             <button
               key={idx}
               onClick={() => setSelectedRound(idx)}
-              className={`px-2 sm:px-4 py-1 sm:py-2 rounded-lg font-semibold text-xs sm:text-base whitespace-nowrap ${
+              className={`px-2 sm:px-4 py-1 sm:py-2 rounded-lg font-semibold text-lg sm:text-base whitespace-nowrap ${
                 selectedRound === idx
                   ? "bg-green-600 text-white shadow-lg"
                   : "bg-slate-700 text-slate-300 hover:bg-slate-600"
