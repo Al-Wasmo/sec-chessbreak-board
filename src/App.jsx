@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 
 const LEAGUES = [
-  { id: "8b8d75aebec84b569a88cdffdc0db9be", name: "League 1", tables: Array.from({ length: 16 }, (_, i) => `A${i + 1}`) },
-  { id: "ff09f6d3e7614fee912e304cdad50b45", name: "League 2", tables: Array.from({ length: 16 }, (_, i) => `B${i + 1}`) }
+  { id: "1d706685527242e9a1d2cd49928a182e", name: "League 1", tables: Array.from({ length: 16 }, (_, i) => `A${i + 1}`) },
+  { id: "55539c6858e342828a61c0b0aca493a5", name: "League 2", tables: Array.from({ length: 16 }, (_, i) => `B${i + 1}`) }
 ];
 
 const BOT_ID = "AlphaSec";
@@ -154,3 +154,4 @@ export default function ChessTournamentBoard() {
     </div>
   );
 }
+
