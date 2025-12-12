@@ -1,16 +1,18 @@
 import { useState, useEffect } from 'react';
 
 const LEAGUES = [
-  { id: "509129f8a23947578f7a4cb1b33dceb7", name: "League 1", tables: Array.from({ length: 16 }, (_, i) => `A${i + 1}`) },
-  { id: "923c9d43b68b4c7993447369edeb0778", name: "League 2", tables: Array.from({ length: 16 }, (_, i) => `B${i + 1}`) }
+  { id: "8b8d75aebec84b569a88cdffdc0db9be", name: "League 1", tables: Array.from({ length: 16 }, (_, i) => `A${i + 1}`) },
+  { id: "ff09f6d3e7614fee912e304cdad50b45", name: "League 2", tables: Array.from({ length: 16 }, (_, i) => `B${i + 1}`) }
 ];
 
 const BOT_ID = "AlphaSec";
 const BOT_TABLE = "C1";
+const BASE_URL = "https://sec-chessbreak-board-backend.onrender.com";
 
 export default function ChessTournamentBoard() {
   const [leagueIndex, setLeagueIndex] = useState(() => Number(localStorage.getItem("leagueIndex")) || 0);
-  const [rounds, setRounds] = useState([]);
+  const [rounds, setRounds] = useState([]); // array of rounds, each round is array of pairings
+  const [numberOfRounds, setNumberOfRounds] = useState(0);
   const [loading, setLoading] = useState(true);
   const [selectedRound, setSelectedRound] = useState(() => Number(localStorage.getItem("roundIndex")) || 0);
 
@@ -20,22 +22,32 @@ export default function ChessTournamentBoard() {
     localStorage.setItem("leagueIndex", leagueIndex);
     setLoading(true);
 
-    const url = `https://api.swisssystem.org/api/tournament/Rounds/${currentLeague.id}`;
-    const headers = {
-      'accept': 'application/json, text/plain, */*',
-      'authorization': 'Bearer YOUR_TOKEN_HERE'
+    // Fetch from our Node.js backend
+    const fetchData = async () => {
+      try {
+        // First, fetch the number of rounds
+        const res = await fetch(`${BASE_URL}/tournament/${currentLeague.id}/1`); // fetch round 1 initially
+        const data = await res.json();
+
+        if (data.numberOfRounds) setNumberOfRounds(data.numberOfRounds);
+
+        // Prepare rounds array
+        const roundsArray = [];
+        for (let r = 1; r <= data.numberOfRounds; r++) {
+          const resRound = await fetch(`${BASE_URL}/tournament/${currentLeague.id}/${r}`);
+          const roundData = await resRound.json();
+          roundsArray.push(roundData.players);
+        }
+
+        setRounds(roundsArray);
+      } catch (err) {
+        console.error("Error fetching tournament data:", err);
+      } finally {
+        setLoading(false);
+      }
     };
 
-    fetch(url, { headers })
-      .then(res => res.json())
-      .then(data => {
-        if (data.success && data.result?.rounds) setRounds(data.result.rounds);
-        setLoading(false);
-      })
-      .catch(err => {
-        console.error("Error:", err);
-        setLoading(false);
-      });
+    fetchData();
   }, [leagueIndex]);
 
   useEffect(() => {
@@ -81,7 +93,7 @@ export default function ChessTournamentBoard() {
 
         {/* Round Selector */}
         <div className="mb-4 sm:mb-6 flex flex-wrap sm:flex-nowrap gap-1 sm:gap-2 overflow-x-auto pb-1 sm:pb-2">
-          {rounds.map((_, idx) => (
+          {Array.from({ length: numberOfRounds }).map((_, idx) => (
             <button
               key={idx}
               onClick={() => setSelectedRound(idx)}
@@ -108,15 +120,13 @@ export default function ChessTournamentBoard() {
           {/* Pairings */}
           <div className="divide-y divide-slate-700">
             {currentRound.map((pairing, idx) => {
-              const badge = getResultBadge(pairing.result, pairing.whiteResult);
-              const isBye = pairing.result === 'Bye';
               const tableName =
-                pairing.white.name === BOT_ID || pairing.black.name === BOT_ID
+                pairing.player1 === BOT_ID || pairing.player2 === BOT_ID
                   ? BOT_TABLE
                   : currentLeague.tables[idx];
 
               return (
-                <div key={pairing.pairNum} className="px-3 sm:px-6 py-2 sm:py-4 hover:bg-slate-700/30 transition-colors flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-xs sm:text-sm">
+                <div key={idx} className="px-3 sm:px-6 py-2 sm:py-4 hover:bg-slate-700/30 transition-colors flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-xs sm:text-sm">
                   {/* Board */}
                   <div className="sm:w-12 flex-shrink-0 flex justify-start sm:justify-center mb-1 sm:mb-0">
                     <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center font-bold text-white shadow-lg text-sm sm:text-base">
@@ -125,21 +135,15 @@ export default function ChessTournamentBoard() {
                   </div>
 
                   {/* White */}
-                  <div className={`flex-1 flex items-center gap-2 sm:gap-3 ${pairing.white.disabled ? 'opacity-50' : ''}`}>
+                  <div className="flex-1 flex items-center gap-2 sm:gap-3">
                     <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-sm bg-white shadow-md flex-shrink-0"></div>
-                    <div className="font-semibold text-white truncate text-xl">{pairing.white.name}</div>
+                    <div className="font-semibold text-white truncate text-xl">{pairing.player1}</div>
                   </div>
 
                   {/* Black */}
-                  <div className={`flex-1 flex items-center gap-2 sm:gap-3 ${!isBye && pairing.black.disabled ? 'opacity-50' : ''}`}>
-                    {!isBye ? (
-                      <>
-                        <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-sm bg-slate-900 shadow-md border-2 border-slate-600 flex-shrink-0"></div>
-                        <div className="font-semibold text-white truncate text-xl">{pairing.black.name}</div>
-                      </>
-                    ) : (
-                      <div className="text-slate-500 italic">No opponent</div>
-                    )}
+                  <div className="flex-1 flex items-center gap-2 sm:gap-3">
+                    <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-sm bg-slate-900 shadow-md border-2 border-slate-600 flex-shrink-0"></div>
+                    <div className="font-semibold text-white truncate text-xl">{pairing.player2}</div>
                   </div>
                 </div>
               );
