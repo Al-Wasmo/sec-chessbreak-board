@@ -11,8 +11,15 @@
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.18",
+    "@tsparticles/engine": "^3.9.1",
+    "@tsparticles/react": "^3.0.0",
+    "@tsparticles/slim": "^3.9.1",
+    "canvas-confetti": "^1.9.4",
+    "js-confetti": "^0.13.1",
+    "party-js": "^2.2.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
+    "react-text-animate": "^2.1.1",
     "tailwindcss": "^4.1.18"
   },
   "devDependencies": {
