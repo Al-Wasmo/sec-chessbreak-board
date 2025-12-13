@@ -3,8 +3,8 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 
 
 const LEAGUES = [
-  { id: "1d706685527242e9a1d2cd49928a182e", name: "League 1", tables: Array.from({ length: 16 }, (_, i) => `A${i + 1}`) },
-  { id: "55539c6858e342828a61c0b0aca493a5", name: "League 2", tables: Array.from({ length: 16 }, (_, i) => `B${i + 1}`) }
+  { id: "385b5462248c4f1c9fbebd3c4e86e136", name: "League 1", tables: Array.from({ length: 16 }, (_, i) => `A${i + 1}`) },
+  { id: "a8dadc836fa14470b74499e92263cbd9", name: "League 2", tables: Array.from({ length: 16 }, (_, i) => `B${i + 1}`) }
 ];
 
 const BOT_ID = "AlphaSec";
