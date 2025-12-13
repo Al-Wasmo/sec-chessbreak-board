@@ -7,7 +7,7 @@ const LEAGUES = [
   { id: "a8dadc836fa14470b74499e92263cbd9", name: "League 2", tables: Array.from({ length: 16 }, (_, i) => `B${i + 1}`) }
 ];
 
-const BOT_ID = "AlphaSec";
+const BOT_ID = "AlphaSEC";
 const BOT_TABLE = "C1";
 const BASE_URL = "https://sec-chessbreak-board-backend.onrender.com";
 
